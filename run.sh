@@ -33,4 +33,4 @@ cd "$DEST"
 pip install ollama --quiet
 
 echo "starting fossil..."
-python main.py
+python3 main.py
