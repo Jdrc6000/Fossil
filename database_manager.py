@@ -1,7 +1,7 @@
 from pathlib import Path
 import json
 
-base_path = Path(r"/Users/joshuacarter/Desktop/Coding/Code Vault/projects/fossil")
+base_path = Path(__file__).parent
 dino_path = base_path / "dinos.json"
 guides_path = base_path / "guides"
 
@@ -20,7 +20,7 @@ def is_dino_real(dino_name: str) -> bool:
 def query_dino(dino_name: str) -> None | dict:
     dino_name = dino_name.lower().strip().replace(" ", "")
     if not is_dino_real(dino_name): return None
-    return data[dino_name]
+    return data["dinos"][dino_name]
 
 # guides
 def list_all_guides() -> list[str]:
@@ -32,3 +32,8 @@ def read_guide(guide_name: str) -> str | None:
     
     if not guide_path.exists(): return None
     return guide_path.read_text(encoding="utf-8")
+
+if __name__ == "__main__":
+    print(list_all_dinos())
+    print(is_dino_real("tylosaurus"))
+    print(query_dino("tapejara"))
