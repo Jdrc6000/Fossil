@@ -7,13 +7,13 @@ DEST="/tmp/fossil-$$"
 
 # install ollama if not present
 if ! command -v ollama &> /dev/null; then
-    echo "Installing Ollama..."
+    echo "installing ollama..."
     curl -fsSL https://ollama.com/install.sh | sh
 fi
 
 # start if not started already
 if ! pgrep -x "ollama" > /dev/null; then
-    echo "starting Ollama service..."
+    echo "starting ollama service..."
     ollama serve &> /tmp/ollama.log &
     sleep 3
 fi

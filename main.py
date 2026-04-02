@@ -1,5 +1,5 @@
 # NOTE
-# Cheers, Paleo.gg for the full database of dinosaurs for JWE2
+# Cheers, Paleo.gg for the full database of dinosaurs for JWE2 + JWE3
 
 from database_manager import is_dino_real, query_dino, list_all_dinos, list_all_guides, read_guide
 import ollama, json
@@ -65,18 +65,19 @@ TOOLS = [
     },
 ]
 
+GAME = "jwe3"
+NAME_MAP = {"jwe2": "Jurassic World Evolution 2", "jwe3": "Jurassic World Evolution 3"} # a stupid little helper
 TOOL_MAP = {
-    "is_dino_real": lambda args: str(is_dino_real(**args)),
-    "query_dino": lambda args: json.dumps(query_dino(**args), indent=2),
-    "list_all_dinos": lambda args: json.dumps(list_all_dinos()),
-    "list_all_guides": lambda args: json.dumps(list_all_guides()),
-    "read_guide": lambda args: read_guide(**args) or f"Guide '{args.get('guide_name')}' not found.",
+    "is_dino_real": lambda args: str(is_dino_real(game=GAME, **args)),
+    "query_dino": lambda args: json.dumps(query_dino(game=GAME, **args), indent=2),
+    "list_all_dinos": lambda args: json.dumps(list_all_dinos(game=GAME)),
+    "list_all_guides": lambda args: json.dumps(list_all_guides(game=GAME)),
+    "read_guide": lambda args: read_guide(game=GAME, **args) or f"Guide '{args.get('guide_name')}' not found.",
 }
-
 MODEL = "gpt-oss:20b-cloud"
-SYSTEM = """
-You are a helpful assistant for the Fossil dinosaur database (Jurassic World Evolution 2).
-You have access to tools that query the database and read guides. You MUST use these tools — never answer from your own knowledge.
+SYSTEM = f"""
+You are a helpful assistant for the Fossil dinosaur database ({NAME_MAP[GAME]}).
+You have access to tools that query the database and read guides. You MUST use these tools - never answer from your own knowledge.
 
 Rules:
 - If the user asks about a specific dinosaur's stats, behaviour, cohabitation, or hunting targets, use query_dino.
@@ -86,16 +87,15 @@ Rules:
 - If no guide or database entry exists for the topic, say so honestly.
 """
 
+history = [{"role": "system", "content": SYSTEM}]
+
 def run_agent(user_message: str) -> str:
-    messages = [
-        {"role": "system", "content": SYSTEM},
-        {"role": "user", "content": user_message},
-    ]
+    history.append({"role": "user", "content": user_message})
 
     while True:
-        response = ollama.chat(model=MODEL, messages=messages, tools=TOOLS)
+        response = ollama.chat(model=MODEL, messages=history, tools=TOOLS)
         msg = response.message
-        messages.append(msg)
+        history.append(msg)
 
         if not msg.tool_calls:
             return msg.content
@@ -105,14 +105,10 @@ def run_agent(user_message: str) -> str:
             fn_args = tc.function.arguments or {}
             print(f"  [tool] {fn_name}({fn_args})")
 
-            if fn_name in TOOL_MAP:
-                result = TOOL_MAP[fn_name](fn_args)
-            else:
-                result = f"Unknown tool: {fn_name}"
+            result = TOOL_MAP[fn_name](fn_args) if fn_name in TOOL_MAP else f"Unknown tool: {fn_name}"
+            history.append({"role": "tool", "content": result})
 
-            messages.append({"role": "tool", "content": result})
-
-print(f"Fossil - model: {MODEL}  |  tool count: {len(TOOL_MAP)}")
+print(f"Fossil - model: {MODEL} |  tool count: {len(TOOL_MAP)} | current game: {GAME}")
 print("Type 'quit' to exit.")
 while True:
     try:

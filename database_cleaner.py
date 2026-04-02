@@ -1,15 +1,13 @@
 from pathlib import Path
 import json
 
-path = Path(__file__).parent / "dinos.json"
-
-def read():
+def read(path):
     print("reading...")
     with open(path, "r") as f:
         data = json.load(f)
     return data
 
-def save(data):
+def save(path, data):
     with open(path, "w") as f:
         json.dump(data, f, indent=4)
     print("saved")
@@ -32,8 +30,23 @@ def remove_datapoints(data):
             for key in drop:dino.pop(key, None)
     return data
 
+# relationNameMap
+def remove_relationNameMap(data):
+    print("  removing common datapoints...")
+    for dino in data["dinos"].values():
+        dino.pop("relationNameMap")
+    return data
+
 if __name__ == "__main__":
-    data = read()
+    path = Path(__file__).parent / "jwe2_dinos.json"
+    data = read(path)
     data = remove_rdict_1(data)
     data = remove_datapoints(data)
-    save(data)
+    save(path, data)
+    
+    path = Path(__file__).parent / "jwe3_dinos.json"
+    data = read(path)
+    data = remove_rdict_1(data)
+    data = remove_datapoints(data)
+    data = remove_relationNameMap(data)
+    save(path, data)
