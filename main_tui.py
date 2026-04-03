@@ -168,7 +168,7 @@ Footer {
 class StatusBar(Static):
     def on_mount(self):
         game_name = state.NAME_MAP.get(state.GAME, state.GAME)
-        self.update(f" fossil  ·  {MODEL}  ·  {game_name}")
+        self.update(f" fossil  ~  {MODEL}  ~  {game_name}")
 
 class FossilApp(App):
     CSS = CSS
@@ -246,7 +246,7 @@ class FossilApp(App):
 
     def _append_info(self, text: str):
         t = Text()
-        t.append("  · ", style=Style(color="#555555"))
+        t.append("  ~ ", style=Style(color="#555555"))
         t.append(text, style=Style(color="#666666"))
         self._richlog().write(t)
 
@@ -270,8 +270,11 @@ class FossilApp(App):
             self.exit()
             return
 
-        if commands.handle_command(text):
-            self._append_info(f"Command handled: {text}")
+        result = commands.handle_command(text)
+        if result is not None:
+            self._append_user(text)
+            if result:
+                self._append_info(result)
             return
 
         self._append_user(text)

@@ -101,7 +101,11 @@ while True:
         break
     if not user_input or user_input.lower() in {"quit", "exit"}:
         break
-    if commands.handle_command(user_input):
+    
+    result = commands.handle_command(user_input)
+    if result is not None:
+        print(result)
         continue
+    
     answer = run_agent(user_input)
     print(f"Fossil: {answer}")
