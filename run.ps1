@@ -34,7 +34,7 @@ Set-Location $DEST
 
 # install python lib
 Write-Host "installing dependencies..."
-pip install ollama --quiet
+pip install ollama textual --quiet
 
 Write-Host "starting fossil..."
 python main_tui.py

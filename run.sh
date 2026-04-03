@@ -30,7 +30,7 @@ git clone --depth=1 "$REPO" "$DEST"
 cd "$DEST"
 
 # install python lib
-pip install ollama --quiet
+pip install ollama textual --quiet
 
 echo "starting fossil..."
 python3 main_tui.py
