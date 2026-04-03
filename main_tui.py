@@ -205,7 +205,7 @@ class FossilApp(App):
         t.append("  🦕 fossil", style=Style(color="#cc785c", bold=True))
         self._richlog().write(t)
         self._richlog().write(Text(
-            f"  {MODEL}  ·  {state.NAME_MAP.get(state.GAME, state.GAME)}",
+            f"  {MODEL}  ~  {state.NAME_MAP.get(state.GAME, state.GAME)}",
             style=Style(color="#555555"),
         ))
         self._richlog().write(Text(
@@ -232,14 +232,14 @@ class FossilApp(App):
     def _append_tool(self, fn_name: str, fn_args: dict):
         args_str = ", ".join(f"{k}={v!r}" for k, v in fn_args.items())
         t = Text()
-        t.append("  ⚙ ", style=Style(color="#444444"))
+        t.append("  $ ", style=Style(color="#444444"))
         t.append(fn_name, style=Style(color="#6a6a6a", bold=True))
         t.append(f"({args_str})", style=Style(color="#444444"))
         self._richlog().write(t)
 
     def _append_error(self, text: str):
         t = Text()
-        t.append("  ✖ ", style=Style(color="#c05050"))
+        t.append("  x ", style=Style(color="#c05050"))
         t.append(text, style=Style(color="#a05050"))
         self._richlog().write(t)
         self._richlog().write(Text(""))
